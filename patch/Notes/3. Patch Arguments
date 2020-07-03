@@ -76,3 +76,14 @@ Spec:
             @patch('__main__.foo',spec=True)
             def test_bar(mock_foo):
                 bar()   #EXCEPTION
+
+kwargs:
+    - Configure the mock
+    @patch('my.module.Foo.name', return_value='Lisa')
+    @patch('my.module.Foo', name='Lisa', month='June')
+    @patch('my_module.Foo', **{'name.return_value':'Lisa'})
+
+Takeaways:
+    - In what scope is my Target?
+    - In what scope do I want my target to be mocked?
+    - Speccing solves mocking problems?
