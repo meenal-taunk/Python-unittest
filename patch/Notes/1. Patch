@@ -1,0 +1,87 @@
+What does patch do ?
+    - Temporarily replaces your target with a different object.
+    - By default, the different object we replace it with it's called a magic mock.
+
+Target ?
+    - 'package.module.ClassName'
+
+When should you mock?
+    - When you don't want to actually call an object.
+
+Example ?
+    # my_module.py
+    - def foo():
+        x = db_write()
+        return x
+      def db_write():
+        .....
+
+    - If you want to test function foo() without calling db_write(), then use patch to mock db_write()
+    - Patch as decorator
+        @patch('my_module.db_write')
+    # test.py
+    -import my_module
+    @patch('my_module.db_write')
+    def test_foo(self,mock_write):
+        x = my_module.foo()
+        self.assertEqual(x,10)
+
+    - we call my_module.foo() from test, my_module.foo() in internally calling db_write().
+    - We have patched out db_write(). Replace db_write with MagicMock().
+    - Under the hood, patch is highjacking the memory address that we would be going to for db_write() and sending it instead to MagicMock().
+
+Confusing ?
+    - Identify the target
+    - Multiple ways to call
+
+Target Must be Importable from the test file
+    @patch('package.module.className')
+
+IMPORTANT: Patch where the object is used.
+    - Don't patch where the code lives. Patch location where the object is used or object is looked up.
+
+Difference in Patch
+    #my_module.py
+        from db import db_write
+        def foo():
+            x = db_write()
+            return x
+    - Here, we load 'db_write' in our module
+        ['__builtins__', ..., 'foo', 'db_write']
+
+    -Patching:
+        @patch('my_module.db_write')     - Correct
+        @patch('db.db_write')            - Wrong
+
+
+    # my_module
+        import db
+        def foo():
+            x = db.db_write()
+            return x
+    - Here, we load 'db' in our module
+        ['__builtins__', ..., 'foo', 'db']
+
+    -Patching:
+        @patch('my_module.db_write')     - Wrong
+        @patch('db.db_write')            - Correct
+
+    @patch('db.db_write') == @patch('my_module.db.db_write')
+
+Ways to call ?
+    1. Decorators (Function and Class)
+    2. Context Manager
+    3. Manual Start/Stop
+    Refer unnittest.mock.patch file for more details and code.
+
+Scope ?
+    1. Context Manager
+        - Smallest Scope
+        - Only for PART of a function
+    2. Function Decorator
+        - Next larger
+        - Decorate for ENTIRE LIFE of a single function
+    3. Class Decorator
+        - Decorates EVERY SINGLE FUNCTION within a class with the same mock
+    4. Manual Start/Stop Mock
+        - Scope is WHATEVER YOU DEFINE it to be.

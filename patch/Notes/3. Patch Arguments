@@ -1,0 +1,78 @@
+THE ARGUMENTS
+--------------------------------------------------
+
+def patch(
+        target, new=DEFAULT, spec=None,
+        create=False, spec_set=None,
+        autospec=None, new_callable=None,
+        **kwargs
+  ):
+
+SPEC & AUTOSPEC & SPEC_SET
+    - Solve common mocking problems
+
+Mock Problems:
+    1. Misspelled asserts look like attributes
+        mock.foo.assret_called_with()
+       - Magic mock thinks this is an attributes and it will not fail and it will pass.
+
+    2. Mock objects called incorrectly pass silently
+        def foo(name):
+            return "Hello {}".format(name)
+        def bar():
+            print(foo())
+      - This will also pass, it doesn't know foo has arguments.
+
+A MagicMock:
+    - Check Foo.py
+    - We see bunch of stuffs in dir() but what we don't see is any of the attributes from Foo.
+
+
+A Specced MagicMock:
+    - To have attributes from class, we use spec=True
+    - Check Foo1.py
+
+Spec:
+    => Misspelled asserts look like attributes
+        -Without Spec
+            def foo(arg):
+                pass
+            def bar():
+                return foo('Bob')
+
+            @patch('__main__.foo')
+            def test_bar(mock_foo):
+                bar()
+                mock_foo.assret_called_with('Bob')  #PASS
+
+        -With Spec
+            def foo(arg):
+                pass
+            def bar():
+                return foo('Bob')
+
+            @patch('__main__.foo',spec=True)
+            def test_bar(mock_foo):
+                bar()
+                mock_foo.assret_called_with('Bob')  #EXCEPTION
+
+    => Mock objects called incorrectly pass silently
+        -Without spec
+            def foo(arg):
+                pass
+            def bar():
+                return foo()    #ERROR
+
+            @patch('__main__.foo')
+            def test_bar(mock_foo):
+                bar()   #PASS
+
+        -With Spec
+            def foo(arg):
+                pass
+            def bar():
+                return foo()    #ERROR
+
+            @patch('__main__.foo',spec=True)
+            def test_bar(mock_foo):
+                bar()   #EXCEPTION
