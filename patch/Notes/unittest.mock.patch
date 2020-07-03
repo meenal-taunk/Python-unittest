@@ -1,0 +1,34 @@
+How to use Python's unittest.mock.patch
+------------------------------------------------------
+
+Target of your patch:
+    mock.patch('package.module.ClassName')
+
+Return Value:
+    mock.patch('package.module.ClassName',return_value="Techie")
+
+Side Effect:
+    mock.patch('package.module.ClassName',side_effect=Exception('boom!')
+
+Source Code:
+Without patch
+    -Unittest.patch.tests.test_without_patch
+
+ways to apply the mock:
+    1.Patch Decorator
+        - Unittest.patch.tests.test_patch_decorator
+        - can be applied at method or class level
+        - For method level
+            - place @mock.patch('src.fs.check_output', return_value=b'foo\nbar\n') above "def test_*"
+        - For class level
+            - place @mock.patch('src.fs.check_output', return_value=b'foo\nbar\n') above "class Test*"
+
+    2.Context Manager
+        - Unittest.patch.tests.test_patch_context_manager
+        - Applied inside a method
+
+    3.Inline
+        - manually calling start & stop at the mock patch object
+        - Setup & teardown will run before and after test is complete
+
+
